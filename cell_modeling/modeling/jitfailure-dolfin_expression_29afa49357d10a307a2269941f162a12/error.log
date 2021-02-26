@@ -1,0 +1,8 @@
+/tmp/tmp45ik46cb/dolfin_expression_29afa49357d10a307a2269941f162a12.cpp: In member function ‘virtual void dolfin::dolfin_expression_29afa49357d10a307a2269941f162a12::eval(Eigen::Ref<Eigen::Matrix<double, -1, 1> >, Eigen::Ref<const Eigen::Matrix<double, -1, 1> >) const’:
+/tmp/tmp45ik46cb/dolfin_expression_29afa49357d10a307a2269941f162a12.cpp:62:29: error: ‘yy’ was not declared in this scope
+           values[0] = t*5 + yy/10;
+                             ^~
+/tmp/tmp45ik46cb/dolfin_expression_29afa49357d10a307a2269941f162a12.cpp:62:29: note: suggested alternative: ‘yn’
+           values[0] = t*5 + yy/10;
+                             ^~
+                             yn

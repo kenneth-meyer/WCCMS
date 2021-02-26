@@ -1,3 +1,15 @@
+# this file will handle running simulations.
+
+#Ideas:
+'''
+    1. Accept txtfile or json file input data to determine what sim we are going to run
+    2. create functions to output data in a pretty way
+        2a. use paraview functions to make super cool paraview visualizations
+        2b. create an option to run viz off completely
+    3. 
+
+'''
+
 from dolfin import *
 #import mshr
 import ufl
@@ -5,15 +17,12 @@ import meshio
 import numpy as np
 from fiber_tools import *
 
-'''
-This file is for testing purpose.
-Unaxial stress fibers in the y-direction added. 
-'''
-
+# this data can be inputed through a txt file
 mesh_dir = "../mesh/0609G1/"
 intput = ""
 output = "../output_data/test"
 
+# don't touch this yet, idk what it means.
 parameters["form_compiler"]["cpp_optimize"] = True
 parameters["form_compiler"]["quadrature_degree"] = 5
 ffc_options = {"optimize": True, \
@@ -22,6 +31,7 @@ ffc_options = {"optimize": True, \
                "precompute_ip_const": True}
 set_log_level(20)
 
+# likely want to allow inputs for this to allow user to easily input files.
 def setup():
     '''
     Create simple cell geometry, define different material domains,
@@ -45,6 +55,7 @@ def setup():
     V0 = FunctionSpace(mesh, 'P', degree)
     return mesh, domains, V0, V
 
+# don't need to touch this for now; high-level modularization of inputs will be done; this is the hard part.
 def solver(u, mesh, domains, V0, V, B, T, f):
     '''
     Solve the boundary value problem with body force B and boundary traction T
@@ -95,50 +106,12 @@ def solver(u, mesh, domains, V0, V, B, T, f):
     #ef = as_vector([0,0,1]) # fiber orientation (undeformed)
     #Scheme 2
 
-    class MyFiber(UserExpression):
-        '''
-            User-defined stress fiber orientation in the cell
-            in the undeformed configuration
-        '''
-        #current expression: non-continuous, +z orientation when z-coordinate > 35, +y otherwise
-        def eval(self, value, x):
-            
-            x_c = x[0]
-            y_c = x[1]
-            z_c = x[2]        
-            value[0] = x_c
-            value[1] = y_c
-            value[2] = z_c
-
-            #normalizing/turning into unit vector
-            for i in range(0,3):
-                value[i] = value[i]/sqrt(x_c**2 + y_c**2 + z_c**2)
-
-
-            # defining contractile strength as a function of position
-
-            # michael mentioned using spherical harmonics to specify sf,
-            # general ideas: map geometry of cell to sphere, on the sphere we 
-            # prescribe the fiber directions and then map it back to the cell.
-            # (try to meet with Michael about this to understand exactly what he is asking)
-
-            # can try something more complicated with real cell geometry. 
-            # method: can we combine sparse info about where fiber SHOULD go to better describe the distribution
-
-            #1. how do we know direction? (have some idea around protrusions)
-            #2. how do we describe continuous distribution?
-
-            # think of ways to specify density of sf here
-
-
-        def value_shape(self):
-            return (3,)
-
+    # could list the distributions as scheme numbers, could be an easy/quick way.
     
-    ef = MyFiber()
-    #ef = FiberOrientation() # class that defines sf orientation foudn in fiber_tools.py.
+    #ef = MyFiber()
+    ef = FiberOrientation() # class that defines sf orientation foudn in fiber_tools.py.
     I4 = sqrt(dot(ef,C*ef))
-    m = F*ef/sqrt(I4) # fiber orientation (deformed)
+    m = F*ef/I4 # fiber orientation (deformed)
 
     # calcualtes cauchy stress in the sf
     Tsf = f*I4/J*as_matrix([[m[0]*m[0], m[0]*m[1], m[0]*m[2]],
@@ -194,8 +167,15 @@ def run():
 
     # having trouble accessing x outside of "solver"
     #yy = abs(x[2])
+
     # time-dependent field of active fiber contraction 
+    #f = Expression(('t*5'),t=0.,element=V0.ufl_element())
     f = Expression(('t*5'),t=0.,element=V0.ufl_element())
+
+    #f = ContractileStrength(t=0.,element=V0.ufl_element())
+    # i think that this will be wrong. I never include the element=V0...... in it.
+
+
     # no traction boundary condition
     T = Constant((0.,0.,0.))
 
