@@ -16,6 +16,7 @@ import ufl
 import meshio
 import numpy as np
 from fiber_tools import *
+from fiber_sim_tools import *
 
 # this data can be inputed through a txt file
 mesh_dir = "../mesh/0609G1/"
@@ -30,30 +31,6 @@ ffc_options = {"optimize": True, \
                "precompute_basis_const": True, \
                "precompute_ip_const": True}
 set_log_level(20)
-
-# likely want to allow inputs for this to allow user to easily input files.
-def setup():
-    '''
-    Create simple cell geometry, define different material domains,
-    initiate finite element function spaces for scalar and vector variables.
-    '''
-    mesh = Mesh()
-    #with XDMFFile('e10_dense_pruned.xdmf') as infile:
-    with XDMFFile(mesh_dir + "new100.xdmf") as infile:
-        infile.read(mesh)
-    domains = MeshFunction('size_t',mesh,mesh.topology().dim())
-    with XDMFFile(mesh_dir + "new100.xdmf") as infile:
-        infile.read(domains)
-    '''
-    100: gel
-    200: cytoplasm
-    300: nucleus
-    '''
-    # degree of the finite element space
-    degree = 1
-    V = VectorFunctionSpace(mesh, 'P', degree)
-    V0 = FunctionSpace(mesh, 'P', degree)
-    return mesh, domains, V0, V
 
 # don't need to touch this for now; high-level modularization of inputs will be done; this is the hard part.
 def solver(u, mesh, domains, V0, V, B, T, f):
@@ -136,19 +113,8 @@ def solver(u, mesh, domains, V0, V, B, T, f):
 
 # defining contractile strength (f) as a class to give us the ability to spatially define it.
 
-'''
-class ff(UserExpression):
-        
-    def eval(self, value, x):
-            
-        # define contractile strenght spatially
 
-        # start off with changing it with z position or something.
-
-    def value_shape(self):
-        return (1,)
-        # not sure how to define the shape/how to access the shape of the stress field.
-'''
+# should I keep this here?...
 def run():
     '''
     Define the solution, and external fields.
@@ -173,13 +139,11 @@ def run():
 
     # spatially defined contractile strength function..why did it take so long.
     #f = Expression(('t*5'),t=0.,element=V0.ufl_element())
-    f = Expression('t*5*abs(x[0])/100',t=0.,element=V0.ufl_element())
-    #hopefully this works?
 
-    #f = ContractileStrength(t=0.,element=V0.ufl_element())
-    # i think that this will be wrong. I never include the element=V0...... in it.
+    # time is not advancing for some reason.
+    f = ContractileStrength(t=0.,element=V0.ufl_element())
 
-
+    print(type(f))
     # no traction boundary condition
     T = Constant((0.,0.,0.))
 
@@ -228,7 +192,8 @@ def run():
             vtkfile_mz << (mz,t)
         # advance the fields
         B.t = B.t+dt
-        f.t = f.t+dt
+        f.t = f.t+dt 
+        print(f.t)
 
 if __name__ == '__main__':
     run()

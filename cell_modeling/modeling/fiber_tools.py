@@ -1,7 +1,10 @@
 # This is a file that contains modularized elements of a stress fiber (sf) contraction simulation.
 
 from dolfin import *
-
+#import mshr
+import ufl
+import meshio
+import numpy as np
 
 '''
 	This class overloads the dolfin "Expression" function.
@@ -11,11 +14,15 @@ from dolfin import *
 	answer: I should probably add an input for distribution type, and then it can be chosen. I think.
 	but I would have to alter the class itself every time I want to add a new distribution; I guess that's ok.
 '''
+
 class FiberOrientation(UserExpression):
         '''
             User-defined stress fiber orientation in the cell
             in the undeformed configuration
         '''
+
+        # still need to modularize this better/make it easier to adapt/use.
+
         #current expression: non-continuous, +z orientation when z-coordinate > 35, +y otherwise
         def eval(self, value, x):
 
@@ -36,7 +43,9 @@ class FiberOrientation(UserExpression):
             for i in range(0,3):
                 value[i] = value[i]/sqrt(x_c**2 + y_c**2 + z_c**2) #be careful of when this is small/division by zero.
 			''' 
-            # notes:
+
+			
+            # notes: (THESE NOTES ARE IMPORTANT)
 
             # defining contractile strength as a function of position
 
@@ -53,46 +62,30 @@ class FiberOrientation(UserExpression):
 
             # think of ways to specify density of sf here
 
-
         def value_shape(self):
             return (3,)
 
 # this represents the scalar contractile strength field that is to be applied to our mesh            
-class ContractileStrength(UserExpression): # will it recognize this as a Expression function in dolfin?
-
-    #t = 0. #time-dependent as well...
+class ContractileStrength(UserExpression):
     
     # first spatially defined sf contraction will just say that the contractile strength is large far from nucleus
     # will it also apply to the gel? I'll understand this more by understanding the math more; but need to 
 
-    #t = 0.
-
     # overloading the __init__ function in order to allow time to be tracked.
-    def __init__(self, **kwargs):
-         self._t = kwargs["t"]
-         self._element = kwargs["element"]
-         #self.element = element
-
-
+    
+    def __init__(self, t,**kwargs):
+        # got this online; not sure what it does
+        # fairly sure that it initializes the object and gives it all the necessary attributes,
+        # like _ufl_shape and others. pretty cool.
+        super(ContractileStrength,self).__init__(**kwargs)
+        self.t = t
+        #self._element = kwargs["element"]
+    
     def eval(self, value, x):
         
         # define contractile strenght spatially
-
-        # start off with changing it with z position or something.
-
-        '''
-        x_c = x[0]
-        y_c = x[1]
-        z_c = x[2]
-
-
-        # contractile strength increases as we move further away from the nucleus.
-        value = t*sqrt(x_c**2 + y_c**2 + z_c**2)/100 #divide by 100 because I don't want it to be too large.
-        '''
-        
-        value = t*5 # t should be advanced; it is a field.
-
+        value = self.t*5 # t is not being advanced, not sure why.
+        #print(value) #is this allowed???
 
     def value_shape(self):
         return (1,)
-        # not sure how to define the shape/how to access the shape of the stress field.
