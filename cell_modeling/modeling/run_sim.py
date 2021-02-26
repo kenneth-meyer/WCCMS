@@ -163,14 +163,18 @@ def run():
     # EXTENDING THE FIBER CONTRACTION TO BE A FUNCTION OF POSITION
     # likely want to turn this into a class...not entirely sure how to do this.
 
-    # changing the strength based on the z position of the coordinate.
-
-    # having trouble accessing x outside of "solver"
-    #yy = abs(x[2])
+    # changing the strength based on the x position of the coordinate.
 
     # time-dependent field of active fiber contraction 
     #f = Expression(('t*5'),t=0.,element=V0.ufl_element())
-    f = Expression(('t*5'),t=0.,element=V0.ufl_element())
+    #x = SpatialCoordinate(V0)
+    #f = Expression('t*5*(A**2+B**2+C**2)/100',t=0.,A=x[0],B=x[1],C=x[2],element=V0.ufl_element())
+
+
+    # spatially defined contractile strength function..why did it take so long.
+    #f = Expression(('t*5'),t=0.,element=V0.ufl_element())
+    f = Expression('t*5*abs(x[0])/100',t=0.,element=V0.ufl_element())
+    #hopefully this works?
 
     #f = ContractileStrength(t=0.,element=V0.ufl_element())
     # i think that this will be wrong. I never include the element=V0...... in it.
