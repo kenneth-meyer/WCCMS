@@ -61,9 +61,8 @@ class ContractileStrength(UserExpression):
     def eval(self, value, x):
         
         # define contractile strenght spatially
-        #value = self.t*5 -- old method that wasn't working
-        value[0] = self.t*5 # t is not being advanced, not sure why.
-        #print(value) #is this allowed???
+        #value = self.t*5 -- old method that wasn't working; "value" is vector valued, not an int.
+        value[0] = self.t*5
 
     def value_shape(self):
         return (1,)
