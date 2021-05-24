@@ -1,0 +1,19 @@
+/tmp/tmpzzxdapjr/dolfin_expression_9e1b30342df7fa33002660fd49286805.cpp: In member function ‘virtual void dolfin::dolfin_expression_9e1b30342df7fa33002660fd49286805::eval(Eigen::Ref<Eigen::Matrix<double, -1, 1> >, Eigen::Ref<const Eigen::Matrix<double, -1, 1> >) const’:
+/tmp/tmpzzxdapjr/dolfin_expression_9e1b30342df7fa33002660fd49286805.cpp:62:32: error: ‘A’ was not declared in this scope
+           values[0] = t*5*sqrt(A**2+B**2+C**2);
+                                ^
+/tmp/tmpzzxdapjr/dolfin_expression_9e1b30342df7fa33002660fd49286805.cpp:62:35: error: invalid type argument of unary ‘*’ (have ‘int’)
+           values[0] = t*5*sqrt(A**2+B**2+C**2);
+                                   ^
+/tmp/tmpzzxdapjr/dolfin_expression_9e1b30342df7fa33002660fd49286805.cpp:62:37: error: ‘B’ was not declared in this scope
+           values[0] = t*5*sqrt(A**2+B**2+C**2);
+                                     ^
+/tmp/tmpzzxdapjr/dolfin_expression_9e1b30342df7fa33002660fd49286805.cpp:62:40: error: invalid type argument of unary ‘*’ (have ‘int’)
+           values[0] = t*5*sqrt(A**2+B**2+C**2);
+                                        ^
+/tmp/tmpzzxdapjr/dolfin_expression_9e1b30342df7fa33002660fd49286805.cpp:62:42: error: ‘C’ was not declared in this scope
+           values[0] = t*5*sqrt(A**2+B**2+C**2);
+                                          ^
+/tmp/tmpzzxdapjr/dolfin_expression_9e1b30342df7fa33002660fd49286805.cpp:62:45: error: invalid type argument of unary ‘*’ (have ‘int’)
+           values[0] = t*5*sqrt(A**2+B**2+C**2);
+                                             ^
